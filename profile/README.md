@@ -22,7 +22,7 @@ The company describes its development philosophy as **clinical-question first**:
 | Core domain | Cardiac regenerative medicine and translational electrophysiology |
 | Development model | Clinical characterization → computational triage → biological validation |
 | Core modalities | Gene therapy vectors, engineered cardiomyocyte grafts, cardiac mapping, computational modeling |
-| Current programs | VB-101, VB-204, VB-310 |
+| Current programs | N/A |
 | Program stage | All three publicly disclosed programs are in discovery |
 | Publications | None publicly listed yet |
 | Clinical data | None publicly reported yet |
