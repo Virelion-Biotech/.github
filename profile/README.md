@@ -2,366 +2,223 @@
 
 > **Engineering the Heart.**
 
-Virelion Biotech is an early-stage biotechnology venture focused on the intersection of clinical cardiology and translational regenerative medicine. Its stated goal is to engineer biological solutions for complex cardiac conditions by combining cardiac mapping, computational modeling, gene-therapy vectors, and engineered cardiomyocyte platforms.
+Virelion Biotech is an early-stage biotechnology venture building computational and experimental infrastructure for **cardiac regeneration, cardiac phenotyping, translational research, and biological decision support**.
 
-The company describes its development philosophy as **clinical-question first**: start with what is failing in a diseased heart—conduction, contraction, or structure—then select the biological and computational tools best suited to restore function.
+Our public work is centered on a modular research stack: organize cardiac evidence, design better experiments, measure electrical/mechanical/imaging phenotypes, model biological state, evaluate algorithms rigorously, and connect the pieces through reproducible infrastructure.
 
-**Website:** https://virelionbiotech.netlify.app/  
-**Contact:** virelion85@gmail.com  
-**Parent structure:** Biotechnology venture under Hannan Enterprises Holdings  
+The long-term objective is translational: use better measurement, better computation, and better experimental design to accelerate the development of technologies that restore cardiac function.
+
 **Founded:** 2024  
-**Founder:** Syed Umer Hannan
-
----
-
-## Company at a glance
-
-| Area | Publicly described position |
-|---|---|
-| Mission | Engineer biological solutions for complex cardiac conditions |
-| Core domain | Cardiac regenerative medicine and translational electrophysiology |
-| Development model | Clinical characterization → computational triage → biological validation |
-| Core modalities | Gene therapy vectors, engineered cardiomyocyte grafts, cardiac mapping, computational modeling |
-| Current programs | N/A |
-| Program stage | All three publicly disclosed programs are in discovery |
-| Publications | None publicly listed yet |
-| Clinical data | None publicly reported yet |
-| Advisory board | No formal advisory board publicly listed |
-| Team | Deliberately lean founding team led by Syed Umer Hannan |
-| Capital/structure | Independently capitalized; venture operates under Hannan Enterprises Holdings |
-| Open-source work | Lab utilities, research-intelligence tooling, cardiotoxicity scoring, and biosafety planning tools |
+**Founder:** Syed Umer Hannan  
+**Website:** https://virelionbiotech.netlify.app/  
+**GitHub:** https://github.com/Virelion-Biotech  
+**Contact:** [virelion85@gmail.com](mailto:virelion85@gmail.com)
 
 ---
 
 ## What Virelion is building
 
-Virelion positions itself as a biology-first cardiac technology company rather than a single-product therapeutics business. Its public platform is organized around four complementary pillars.
+Virelion's current public technology is organized as a connected cardiac research stack rather than a collection of unrelated applications.
 
-### 1. Biological pacemakers
+```text
+                    CARDIAC RESEARCH
+                           │
+        ┌──────────────────┼──────────────────┐
+        │                  │                  │
+     EVIDENCE          EXPERIMENT          MEASUREMENT
+        │              DESIGN / SIM             │
+        │                  │                  │
+  CardiAtlas      CardiStudio · CardiSim   ElectroTrace
+        │                                      MyoTrace
+        │                                      OptiCell
+        └──────────────────┬───────────────────┘
+                           │
+                  BIOLOGICAL STATE
+                           │
+                    CardiLearn
+                           │
+             ┌─────────────┴─────────────┐
+             │                           │
+        EVALUATION                  REPRODUCIBILITY
+             │                           │
+ CardiBench · CardiEval             CardiTrace
+ CardioScore · CardiVex             CardiBridge
+ DCCP · CardiAgent
+             │                           │
+             └─────────────┬─────────────┘
+                           │
+                       HEARTTWIN
+                  orchestration layer
+```
 
-Virelion is developing targeted gene-therapy and cellular pacing approaches intended to restore rhythm-generating function natively rather than relying exclusively on implanted electronic hardware.
-
-The stated objective is to mitigate limitations associated with traditional pacing by creating a biological mechanism for cardiac rhythm restoration.
-
-### 2. Engineered cardiomyocyte grafts
-
-The company describes a stem-cell-derived platform for engineering specialized cardiomyocytes for cardiac repair.
-
-The emphasis is not only on generating replacement cells, but on achieving:
-
-- Structural integration with the host myocardium
-- Electrical coupling with native tissue
-- Synchronous contraction rather than mechanically or electrically discordant graft behavior
-
-### 3. High-resolution cardiac mapping
-
-Clinical cardiology is used to characterize the anatomical and functional deficit before therapeutic intervention.
-
-Virelion describes mapping as a way to identify **where** a biological therapy needs to act in diseased myocardium before candidate vectors or cells are advanced through laboratory development.
-
-### 4. Computational cardiac modeling
-
-Predictive models based on single-cell and trajectory data are used to narrow candidate vectors and cell lines before extensive bench experimentation.
-
-The intended role of computation is decision support: reduce search-space complexity, prioritize stronger hypotheses, and limit wasted experimental iteration.
-
----
-
-## How the platform fits together
-
-Virelion explicitly describes its four platform pillars as different levers on the same problem: **restoring function to damaged myocardium**.
-
-### Step 01 — Clinical Characterization
-
-Cardiac mapping data defines the specific structural or functional deficit that a program needs to address.
-
-### Step 02 — Computational Triage
-
-Predictive models narrow the set of vectors and cell lines worth advancing, concentrating experimental effort on the strongest candidates.
-
-### Step 03 — Biological Validation
-
-Gene-therapy vectors and engineered cardiomyocyte grafts are tested against functional benchmarks established during clinical characterization.
-
-This workflow is intended to keep programs grounded in a real cardiac problem from the beginning rather than starting with a technology and searching for an indication later.
+The stack is designed so that individual repositories can be used independently while sharing explicit data, evaluation, provenance, and interoperability contracts.
 
 ---
 
-## Research and technology infrastructure
+## Public technology portfolio
 
-Alongside therapeutic discovery, Virelion maintains an open-source research-tooling layer for laboratory workflows, cardiac electrophysiology, research intelligence, and biosafety planning.
+### Evidence and data foundation
 
-### Cardiac Regenerative Lab Autocrawler
+**[CardiAtlas](https://github.com/Virelion-Biotech/Virelion-CardiAtlas)** — structured cardiac biomedical metadata, evidence, phenotypes, datasets, samples, claims, provenance, and PubMed/GEO retrieval. It emphasizes controlled terminology, identifier normalization, contradiction-aware claims, and deterministic release artifacts.
 
-An autonomous research-intelligence pipeline designed to discover, deduplicate, score, and track academic and translational laboratories working in areas such as:
+**[CardiBench](https://github.com/Virelion-Biotech/Virelion-CardiBench)** — benchmark registry and dataset-management layer for cardiac machine-learning evaluation. It defines biological grouping rules, split policies, leakage checks, benchmark manifests, and reproducible benchmark artifacts.
 
-- Cardiac regeneration
-- Engineered heart tissue
-- Direct reprogramming
-- Stem-cell therapy
-- Biological pacing
+### Experimental design and simulation
 
-The site says the pipeline can ingest information from academic papers and preprints, NIH grant data, clinical-trial registries, patent filings, and targeted web crawling of laboratory and scientific-society directories.
+**[CardiStudio](https://github.com/Virelion-Biotech/Virelion-CardiStudio)** — experimental-design and study-planning toolkit covering factorial designs, replicates, blocking, randomization, synthetic populations, longitudinal trajectories, biological constraints, and approximate power planning.
 
-Its analysis layer combines deterministic structured-field extraction with LLM-assisted work for research categorization and duplicate-principal-investigator resolution. An **Activity Verification Index** classifies labs as Active, Aging, Inactive-Legacy, or Unknown, with year-over-year comparisons, a funding leaderboard, and a clinical-trial dashboard.
+**[CardiSim](https://github.com/Virelion-Biotech/Virelion-CardiSim)** — seeded simulator for synthetic cardiac-cell and cardiac-phenotype trajectories under controlled perturbations, intended for hypothesis generation, benchmark construction, software testing, and model evaluation. Its state variables are abstractions rather than direct biological measurements.
 
-Virelion describes this as an internal research-intelligence utility rather than a clinical or diagnostic product.
+### Cardiac measurement and phenotyping
 
-### Virelion-OptiCell
+**[ElectroTrace](https://github.com/Virelion-Biotech/Virelion-ElectroTrace)** — ECG/electrophysiology signal toolkit for import, annotation, R-peak detection, beat segmentation, phenotype extraction, statistics, and leakage-aware evaluation. It supports CSV, EDF/EDF+, and WFDB ZIP workflows and includes held-out MIT-BIH and external INCART validation work.
 
-A microscopy image quality-control application for batch analysis of cell-image datasets.
+**[MyoTrace](https://github.com/Virelion-Biotech/Virelion-MyoTrace)** — video/TIFF analysis toolkit for cardiac-cell and tissue motion, beat timing, contraction/relaxation features, signal quality, repeatability, and optional multimodal feature fusion. Force interpretation requires instrument-specific calibration.
 
-Key capabilities described by Virelion include:
+**[OptiCell](https://github.com/Virelion-Biotech/Virelion-OptiCell)** — microscopy QC, segmentation, tracking, phenotyping, and experiment-level quantitative analysis. The project explicitly prioritizes measured benchmarks and reproducible QC rather than fabricated performance claims.
 
-- Focus/blur detection using variance of the Laplacian
-- Brightness checks
-- Estimated cell counting
-- Dataset-wide histograms
-- Per-image quality flags
-- Preview overlays
-- Downloadable summary CSV output
-- Streamlit GUI and command-line usage
-- Optional Cellpose-based segmentation when installed
+### Molecular and biological-state modeling
 
-The tool is intended to help researchers review large microscopy datasets quickly and identify suspicious images without manually opening every frame.
+**[CardiLearn](https://github.com/Virelion-Biotech/Virelion-CardiLearn)** — research codebase for cardiac transcriptomic representation learning and downstream prediction, including learned molecular programs, latent representations, biological-state prediction, interpretability, perturbation prediction, and leakage-aware biological splitting.
 
-### Virelion-ElectroTrace
+The larger CardiLearn architecture remains a **research target**, not a validated cardiac foundation model.
 
-A lightweight Streamlit application for creating labeled ECG datasets.
+### Evaluation, safety, and challenge infrastructure
 
-The public feature set includes:
+**[CardioScore](https://github.com/Virelion-Biotech/Virelion-CardioScore)** — configurable research framework for human iPSC-cardiomyocyte MEA data, combining electrophysiology endpoints, uncertainty analysis, dose-response diagnostics, and transparent risk scoring. It is research software and is **not a validated regulatory assay**.
 
-- Multi-channel CSV upload
-- Interactive Plotly waveform visualization
-- Point annotations such as R peaks and pacing spikes
-- Interval annotations for QRS, P/T waves, and artifacts
-- Confidence and note fields
-- Optional display-only filtering
-- JSON export with re-import support
-- Flattened CSV export for machine-learning pipelines
-- Built-in synthetic sample data
+**[CardiEval](https://github.com/Virelion-Biotech/Virelion-CardiEval)** — independent evaluator for submitted cardiac-model predictions against versioned benchmark packages, with classification/regression/ranking metrics, confidence intervals, paired comparisons, subgroup analysis, and reproducible evaluation artifacts.
 
-The display filters are described as non-destructive: the raw signal data is not modified.
+**[CardiVex](https://github.com/Virelion-Biotech/Virelion-CardiVex)** — evaluation framework for cardiac challenge scenarios, including detection, characterization, novelty/OOD behavior, recovery, uncertainty, calibration, and longitudinal benchmarks.
 
-### Virelion-CardioScore
+**[DCCP](https://github.com/Virelion-Biotech/Virelion-DCCP)** — defensive computational challenge platform for testing cardiac models against controlled phenotypic challenge scenarios, OOD cases, and recovery behavior without recreating underlying biological threats.
 
-A preclinical cardiotoxicity-risk scoring framework for **human iPSC-derived cardiomyocyte (iPSC-CM) microelectrode-array (MEA)** recordings.
+**[CardiAgent](https://github.com/Virelion-Biotech/Virelion-CardiAgent)** — reproducible generation of phenotype-level cardiac challenge cases, including heterogeneous, temporal, noisy, partial-observation, and adaptive challenge populations.
 
-Virelion describes CardioScore as CiPA-oriented and intended for early prioritization of candidates such as:
+**[Biosafety Assessment](https://github.com/Virelion-Biotech/Virelion-Biosafety-Assessment)** — rule-based planning aid for cardiac stem-cell and gene-therapy workflows, covering containment suggestions and related engineering-control, waste, training, and documentation considerations. It is **not a substitute for institutional biosafety review or IBC/Biosafety Officer approval**.
 
-- Vaccines
-- Antitoxins
-- Antivirals
-- Other medical-countermeasure candidates
+### Reproducibility and interoperability
 
-The pipeline is described as automating:
+**[CardiTrace](https://github.com/Virelion-Biotech/Virelion-CardiTrace)** — provenance and reproducibility layer for computational runs, artifacts, lineage, execution fingerprints, integrity metadata, trace bundles, and replay comparison.
 
-1. Signal quality control
-2. Field-potential feature extraction
-3. Concentration-response summaries
-4. Multi-endpoint risk scoring
+**[CardiBridge](https://github.com/Virelion-Biotech/Virelion-CardiBridge)** — typed interoperability layer defining versioned message contracts, schema compatibility, routing, idempotency, persistence boundaries, authorization/signing primitives, and conformance testing.
 
-Reported endpoints include:
+### Orchestration
 
-- Field-potential duration (FPD) change
-- Beat rate
-- Amplitude
-- Short-term variability (STV)
-- Triangulation proxies
+**[HeartTwin](https://github.com/Virelion-Biotech/Virelion-HeartTwin)** — orchestration and integration layer for the Virelion cardiac research stack. HeartTwin provides service discovery, typed cardiac-state contracts, adapters, a unified Python/CLI interface, health checks, and workflow composition.
 
-The resulting **CardioScore** is a transparent 0–1 construct mapped to **Low / Moderate / High** risk classes. The site states that weights and thresholds are configurable and that the contribution of each endpoint is inspectable.
+HeartTwin is the intended integration surface for the stack, but **service registration is not the same as a completed native integration**. The repository currently documents several services as registered while native adapters are still being developed.
 
-**Important limitation:** Virelion explicitly states that CardioScore is a research and preclinical prioritization framework, **not a validated regulatory assay** and not a replacement for CiPA/ICH S7B regulatory testing.
+### Research intelligence
 
-### Virelion-Biosafety-Assessment
+**[Cardiac Regenerative Lab Autocrawler](https://github.com/Virelion-Biotech/Cardiac-Regenerative-Lab-Autocrawler)** — multi-source research-intelligence pipeline covering cardiac regeneration, engineered heart tissue, direct reprogramming, stem-cell therapy, and biological pacing. It combines publications, grants, clinical trials, patents, institutional web sources, structured extraction, entity resolution, activity scoring, annual diffing, funding analysis, and trial-landscape reporting.
 
-A single-page planning aid for cardiac stem-cell and gene-therapy workflows.
+### Experimental / educational work
 
-The tool allows users to specify factors such as:
-
-- Cell type
-- Genetic modification
-- Viral vector
-- Working scale
-- Intended use
-
-It then produces planning guidance covering:
-
-- Suggested minimum biosafety level
-- Engineering controls
-- PPE
-- Waste handling
-- Training
-- Documentation
-- Items that may require Institutional Biosafety Committee (IBC) review
-
-The site says its planning logic is informed by publicly available CDC/NIH BMBL guidance, NIH recombinant-DNA guidance, and WHO laboratory-biosafety guidance.
-
-**Important limitation:** The site explicitly frames this as a general planning reference and **not a substitute for formal IBC or Biosafety Officer sign-off**.
-
-### Open-source access
-
-The public website links to Virelion's GitHub organization and to the individual projects described above:
-
-https://github.com/Virelion-Biotech
-
-Because repositories and project status can change independently of the company website, the GitHub organization should be treated as the current source for code, implementation details, and repository-level documentation.
+**[CARDIAC//BREACH](https://github.com/Virelion-Biotech/CARDIAC-BREACH)** — browser-based medical strategy game built around a fictional synthetic cardiac-tissue model. It is an educational/entertainment project rather than a biological intervention platform.
 
 ---
 
-## Development pipeline
+## How the stack fits together
 
-Virelion currently discloses three named programs.
+Virelion's development philosophy is increasingly **measurement-first and evaluation-first**:
 
-| Program | Description | Modality | Indication / objective | Stage | Started |
-|---|---|---|---|---|---:|
-| **VB-101** | Myocardial Regeneration Gene Therapy Vector | Gene therapy | Myocardial regeneration | Discovery | 2024 |
-| **VB-204** | Engineered Cardiomyocyte Graft | Cell therapy / engineered tissue | Structural and functional repair | Discovery | 2025 |
-| **VB-310** | Heart Regeneration Computational Model | Computational modeling | Decision support for vector/cell selection | Discovery | 2026 |
+**1. Define the biological question.**  
+Start from the phenotype or translational problem rather than from a preferred algorithm.
 
-### VB-101 — Myocardial Regeneration Gene Therapy Vector
+**2. Build the study correctly.**  
+Use explicit experimental factors, biological replicates, blocking, randomization, constraints, and power planning where appropriate.
 
-VB-101 is described as a gene-therapy-vector program aimed at restoring function in damaged myocardium.
+**3. Capture the phenotype.**  
+Electrical, mechanical, imaging, and molecular measurements should be represented with explicit metadata and provenance.
 
-The public site states that discovery work began in **2024**.
+**4. Represent biological state.**  
+Translate measurements into structured cardiac-state representations suitable for downstream modeling.
 
-The site's 2026 milestone section says **IND-enabling studies are planned for VB-101**, but the program is still currently listed as being in discovery rather than in an IND-enabling or clinical stage.
+**5. Evaluate under realistic splits.**  
+Use benchmark manifests, biological grouping, leakage checks, held-out studies, subgroup analysis, uncertainty, and reproducible evaluation artifacts.
 
-### VB-204 — Engineered Cardiomyocyte Graft
+**6. Preserve the evidence trail.**  
+Record inputs, transformations, outputs, lineage, hashes, versions, and execution context.
 
-VB-204 is a stem-cell-derived cardiomyocyte program focused on specialized cells engineered for structural integration and electrical coupling.
-
-The stated goal is repair of both the structure and function of damaged cardiac tissue.
-
-Discovery began in **2025**.
-
-### VB-310 — Heart Regeneration Computational Model
-
-VB-310 is a computational decision-support program based on single-cell and trajectory data.
-
-Its intended use is to help identify promising vectors and cell lines for cardiac regeneration research.
-
-The program was initiated in **2026** and is currently listed in discovery.
+**7. Orchestrate only where contracts are clear.**  
+HeartTwin and CardiBridge provide the integration layer; specialist repositories retain their own domain logic.
 
 ---
 
-## Company history and milestones
+## Scientific philosophy
 
-### 2024
+### Evidence before inference
 
-Virelion Biotech was founded under **Hannan Enterprises Holdings**.
+The software stack is designed to distinguish **observed, inferred, and simulated** information. Missing measurements should remain missing rather than being silently interpreted as negative findings.
 
-The company says discovery work began on its heart-regeneration gene-therapy-vector program, later identified publicly as **VB-101**.
+### Biological units matter
 
-### 2025
+Cells, wells, recordings, samples, donors, animals, and studies are not interchangeable statistical units. The benchmark and evaluation tooling is designed to make biological grouping and leakage visible.
 
-The engineered cardiomyocyte graft platform, **VB-204**, entered early discovery alongside continuing work on VB-101.
+### Reproducibility is part of the science
 
-### 2026
+Virelion treats provenance, deterministic manifests, hashes, trace records, and explicit versioning as part of the research workflow rather than as an afterthought.
 
-Virelion initiated **VB-310**, its computational heart-regeneration modeling program.
+### Validation is layered
 
-The company also states that IND-enabling studies are planned for VB-101 as the portfolio advances.
+Software tests, benchmark integrity, external dataset performance, biological validation, and clinical validation are different claims. Passing one layer does not establish the next.
 
 ---
 
-## Team
+## Current development status
 
-### Syed Umer Hannan — Founder
+Virelion is currently an **early-stage research and biotechnology venture**.
 
-Virelion identifies **Syed Umer Hannan** as its founder.
+The public GitHub organization is primarily a record of active computational research infrastructure and prototypes. Some repositories are mature software tools with validation artifacts; others are research architectures, integration components, or experimental projects.
 
-The company describes him as an **MD candidate with a clinical focus in cardiology** who founded Virelion to bridge academic cardiac research with an industry-oriented development pipeline.
+The current public stack should therefore **not** be interpreted as a collection of clinically validated products. In particular:
 
-Virelion says its team is intentionally small and that hiring is driven by specific scientific or program needs rather than a headcount target.
+- Virelion does not currently claim regulatory approval for its public software.
+- CardioScore is not a validated regulatory assay.
+- CardiLearn is not a validated cardiac foundation model.
+- CardiSim is not a validated physiological model or digital twin.
+- HeartTwin is an integration/orchestration system, not by itself a clinically validated digital twin.
+- Synthetic challenge and simulation outputs are computational representations, not empirical patient or animal measurements.
+- Biosafety Assessment is a planning aid, not institutional biosafety approval.
 
-### Advisors
+Therapeutic and biological discovery programs may use this infrastructure, but repository functionality should not be read as evidence of clinical efficacy, safety, or regulatory acceptance.
 
-No formal advisory board is publicly listed at present.
+---
 
-The company identifies electrophysiology, regenerative medicine, gene therapy, and regulatory science as areas of interest as a future advisory structure develops.
+## Open-source strategy
 
-### Hiring
+Virelion uses open-source software to expose research infrastructure, evaluation methods, interoperability contracts, and reproducibility practices while allowing higher-level biological development to evolve independently.
 
-No formal open positions are currently listed.
+Most of the current Virelion research repositories use **AGPL-3.0-or-later**; individual repositories may use different licenses where appropriate. Check each repository's `LICENSE` for the authoritative terms.
 
-Virelion says it remains open to introductions from people whose expertise overlaps with:
+The GitHub organization is the most reliable source for current implementation details, validation artifacts, and project-level status.
+
+---
+
+## Research intelligence and collaboration
+
+Virelion is particularly interested in collaborations spanning:
 
 - Cardiac regenerative medicine
-- Gene-therapy vector design
-- Computational cardiology
-- Cell engineering
+- Cardiomyocyte maturation and engineering
+- Cardiac electrophysiology and phenotyping
+- Tissue engineering and electromechanical integration
+- Computational biology and machine learning
+- Experimental design and biostatistics
+- Translational and regulatory science
+- Reproducible scientific software
+
+For scientific or partnership inquiries, include your background, organization, relevant technical or biological area, and the type of collaboration you are proposing.
 
 ---
 
-## Strategic outlook
+## Contact
 
-Virelion describes its strategic outlook as a combination of:
-
-- Clinical cardiology
-- Molecular biology
-- Cell-based regeneration
-- Computational engineering
-
-Its stated philosophy prioritizes scientific progress, technological acceleration, institutional independence, and long-term thinking.
-
-The company says it does not want to iterate on established modalities simply because they exist; instead, it aims to develop new approaches to cardiac care by combining disciplines that can address the underlying biology of damaged myocardium.
-
----
-
-## How Virelion says it operates
-
-### Evidence first
-
-Programs are intended to be gated by data rather than conviction. The company states that a model that fails to replicate should be stopped before additional resources are spent.
-
-### Clinical grounding
-
-Programs originate from clinical cardiology questions rather than from technology searching for an indication.
-
-### Lean by design
-
-Virelion describes itself as independently capitalized and deliberately small so that scientific decisions can move quickly.
-
----
-
-## Scientific and regulatory status
-
-Virelion is currently an **early discovery-stage biotechnology company**.
-
-The public site states that:
-
-- All three named programs are in discovery.
-- No IND-enabling or clinical stages have started.
-- There are no publicly listed peer-reviewed papers, preprints, or technical notes yet.
-- There is no publicly reported clinical data yet.
-- Detailed development protocols and oversight arrangements are not public at the discovery stage.
-
-The company states that later-stage development will follow applicable regulatory and ethical frameworks for preclinical and clinical research, including appropriate oversight for animal studies and any future human research.
-
-Because the public portfolio is still early, claims in this README should be read as a description of Virelion's **stated programs and plans**, not as evidence of demonstrated clinical efficacy, safety, regulatory approval, or commercial availability.
-
----
-
-## Collaboration and partnerships
-
-Virelion invites inquiries related to:
-
-- Scientific collaboration
-- Partnerships / business development
-- Investment
-- Media and press
-- General scientific questions
-- Career introductions
-
-For scientific outreach, the company asks correspondents to include who they are, their organization if applicable, the relevant program identifier (VB-101, VB-204, or VB-310), and the nature of the inquiry.
-
-### Contact
-
-**Email:** [virelion85@gmail.com](mailto:virelion85@gmail.com)
-
-**Website:** https://virelionbiotech.netlify.app/
-
+**Email:** [virelion85@gmail.com](mailto:virelion85@gmail.com)  
+**Website:** https://virelionbiotech.netlify.app/  
 **GitHub:** https://github.com/Virelion-Biotech
 
 ---
+
+*Last reviewed against the public Virelion-Biotech repository portfolio: September 2026.*
