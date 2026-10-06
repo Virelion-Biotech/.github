@@ -1,0 +1,212 @@
+name: history-squash-audit
+
+on:
+  push:
+    branches:
+      - history-squash-audit-20261006
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Audit public repository histories
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/history-audit"
+          cd "$RUNNER_TEMP/history-audit"
+          cat > repos.txt <<'EOF'
+          Virelion-Biotech/Cardiac-Regenerative-Lab-Autocrawler
+          Virelion-Biotech/Virelion-OptiCell
+          Virelion-Biotech/Virelion-ElectroTrace
+          Virelion-Biotech/Virelion-Biosafety-Assessment
+          Virelion-Biotech/Virelion-CardioScore
+          Virelion-Biotech/.github
+          Virelion-Biotech/Virelion-CardiVex
+          Virelion-Biotech/Virelion-CardiAgent
+          Virelion-Biotech/Virelion-CardiBench
+          Virelion-Biotech/CARDIAC-BREACH
+          Virelion-Biotech/Virelion-CardiEval
+          Virelion-Biotech/Virelion-CardiAtlas
+          Virelion-Biotech/Virelion-CardiLearn
+          Virelion-Biotech/Virelion-CardiSim
+          Virelion-Biotech/Virelion-CardiTrace
+          Virelion-Biotech/Virelion-CardiStudio
+          Virelion-Biotech/Virelion-CardiBridge
+          Virelion-Biotech/Virelion-DCCP
+          Virelion-Biotech/Virelion-MyoTrace
+          Virelion-Biotech/Virelion-HeartTwin
+          Virelion-Biotech/Virelion-VB-101
+          Virelion-Biotech/Virelion-Intelligence
+          Virelion-Biotech/Virelion-VB-204
+          Virelion-Biotech/Virelion-CardiAnatomy
+          Virelion-Biotech/Virelion-CardiEP
+          Virelion-Biotech/Virelion-CardiInfer
+          Virelion-Biotech/Virelion-CardiMech
+          Virelion-Biotech/Virelion-CardiFlow
+          Virelion-Biotech/Virelion-CardiTherapy
+          SyedUmerHannan/cardiomyocyte_maturation
+          SyedUmerHannan/CardioReg-Bounds
+          SyedUmerHannan/Chromosome22_TDP43_DE_analysis
+          SyedUmerHannan/README-RPG
+          SyedUmerHannan/SyedUmerHannan
+          SyedUmerHannan/SyedUmerHannan.github.io
+          EOF
+
+          cat > audit.py <<'PY'
+          import subprocess, json, os, sys
+          from pathlib import Path
+
+          START = 1785531600  # 2026-08-01T00:00:00+03:00
+          END   = 1790802000  # 2026-10-01T00:00:00+03:00
+
+          def run(*args, cwd=None, check=True):
+              p = subprocess.run(args, cwd=cwd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+              if check and p.returncode != 0:
+                  raise RuntimeError(f"{' '.join(args)} failed: {p.stderr.strip()}")
+              return p.stdout.strip()
+
+          def is_user(name, email):
+              n = (name or '').strip().lower()
+              e = (email or '').strip().lower()
+              return (
+                  'syedumerhannan' in e
+                  or e == 'syedumerhannan@icloud.com'
+                  or n == 'syed umer hannan'
+                  or n == 'syedumerhannan'
+              )
+
+          repos = [x.strip() for x in Path('repos.txt').read_text().splitlines() if x.strip()]
+          results = []
+          for i, repo in enumerate(repos, 1):
+              safe = repo.replace('/', '__') + '.git'
+              url = f'https://github.com/{repo}.git'
+              try:
+                  run('git','clone','--mirror','--filter=blob:none','--quiet',url,safe)
+                  cwd = safe
+                  if run('git','show-ref','--verify','--quiet','refs/heads/main',cwd=cwd,check=False) == '':
+                      pass
+                  # show-ref --quiet emits no stdout; rely on return code separately
+                  p = subprocess.run(['git','show-ref','--verify','--quiet','refs/heads/main'],cwd=cwd)
+                  if p.returncode != 0:
+                      raise RuntimeError('refs/heads/main not found')
+
+                  fmt = '%H%x09%at%x09%ct%x09%an%x09%ae%x09%P%x09%T%x09%G?%x09%s'
+                  log = run('git','log','refs/heads/main','--format='+fmt,cwd=cwd)
+                  rows=[]
+                  for line in log.splitlines():
+                      parts=line.split('\t',8)
+                      if len(parts) < 9:
+                          continue
+                      sha, at, ct, an, ae, parents, tree, sig, subj = parts
+                      rows.append({
+                          'sha':sha,'at':int(at),'ct':int(ct),'an':an,'ae':ae,
+                          'parents':[p for p in parents.split() if p], 'tree':tree,
+                          'sig':sig,'subj':subj,
+                      })
+                  bysha={r['sha']:r for r in rows}
+                  target=[r for r in rows if START <= r['at'] < END]
+                  target_user=[r for r in target if is_user(r['an'],r['ae'])]
+                  target_nonuser=[r for r in target if not is_user(r['an'],r['ae'])]
+                  before=[r for r in rows if r['at'] < START]
+                  after=[r for r in rows if r['at'] >= END]
+                  merges=[r for r in target if len(r['parents'])>1]
+                  signed=[r for r in target if r['sig'] not in ('N','')]
+
+                  fp_shas = set(run('git','rev-list','--first-parent','refs/heads/main',cwd=cwd).splitlines())
+                  target_fp=[r for r in target if r['sha'] in fp_shas]
+                  target_nonfp=[r for r in target if r['sha'] not in fp_shas]
+
+                  branch_refs = run('git','for-each-ref','--format=%(refname:short)','refs/heads',cwd=cwd).splitlines()
+                  tag_refs = run('git','for-each-ref','--format=%(refname:short)','refs/tags',cwd=cwd).splitlines()
+                  tag_target=0
+                  for tag in tag_refs:
+                      sha=run('git','rev-list','-n','1',tag,cwd=cwd,check=False)
+                      r=bysha.get(sha)
+                      if r and START <= r['at'] < END:
+                          tag_target += 1
+
+                  all_not_main = run('git','rev-list','--all','--not','refs/heads/main',cwd=cwd,check=False).splitlines()
+                  branch_only_target=0
+                  branch_only_user=0
+                  for sha in all_not_main:
+                      meta=run('git','show','-s','--format=%at%x09%an%x09%ae',sha,cwd=cwd,check=False)
+                      if not meta:
+                          continue
+                      pp=meta.split('\t',2)
+                      if len(pp)!=3: continue
+                      at=int(pp[0]); an=pp[1]; ae=pp[2]
+                      if START <= at < END:
+                          branch_only_target += 1
+                          if is_user(an,ae): branch_only_user += 1
+
+                  target_sorted=sorted(target,key=lambda r:(r['at'],r['sha']))
+                  authors={f"{r['an']} <{r['ae']}>" for r in target}
+                  user_emails=sorted({r['ae'] for r in target_user})
+                  root_shas=[]
+                  for r in rows:
+                      if not r['parents']:
+                          root_shas.append(r['sha'])
+                  root_in_target=any(START <= bysha[s]['at'] < END for s in root_shas if s in bysha)
+
+                  result={
+                      'repo':repo,
+                      'head':run('git','rev-parse','refs/heads/main',cwd=cwd),
+                      'head_tree':run('git','rev-parse','refs/heads/main^{tree}',cwd=cwd),
+                      'main_commits':len(rows),
+                      'before_aug':len(before),
+                      'aug_sep_all':len(target),
+                      'aug_sep_user':len(target_user),
+                      'aug_sep_nonuser':len(target_nonuser),
+                      'aug_sep_first_parent':len(target_fp),
+                      'aug_sep_non_first_parent':len(target_nonfp),
+                      'aug_sep_merges':len(merges),
+                      'aug_sep_signed':len(signed),
+                      'oct_plus':len(after),
+                      'branches':len(branch_refs),
+                      'branch_names':branch_refs,
+                      'branch_only_aug_sep_all':branch_only_target,
+                      'branch_only_aug_sep_user':branch_only_user,
+                      'tags':len(tag_refs),
+                      'tags_on_aug_sep':tag_target,
+                      'root_in_aug_sep':root_in_target,
+                      'target_authors':sorted(authors),
+                      'user_emails':user_emails,
+                      'first_aug_sep_sha':target_sorted[0]['sha'] if target_sorted else None,
+                      'last_aug_sep_sha':target_sorted[-1]['sha'] if target_sorted else None,
+                      'first_aug_sep_date':target_sorted[0]['at'] if target_sorted else None,
+                      'last_aug_sep_date':target_sorted[-1]['at'] if target_sorted else None,
+                  }
+                  results.append(result)
+                  print('AUDIT '+json.dumps(result,separators=(',',':')), flush=True)
+              except Exception as e:
+                  result={'repo':repo,'error':str(e)}
+                  results.append(result)
+                  print('AUDIT '+json.dumps(result,separators=(',',':')), flush=True)
+
+          summary={
+              'repos':len(results),
+              'repos_with_target':sum(1 for r in results if r.get('aug_sep_user',0)>0),
+              'aug_sep_all':sum(r.get('aug_sep_all',0) for r in results),
+              'aug_sep_user':sum(r.get('aug_sep_user',0) for r in results),
+              'aug_sep_nonuser':sum(r.get('aug_sep_nonuser',0) for r in results),
+              'branch_only_aug_sep_user':sum(r.get('branch_only_aug_sep_user',0) for r in results),
+              'merges':sum(r.get('aug_sep_merges',0) for r in results),
+              'signed':sum(r.get('aug_sep_signed',0) for r in results),
+              'errors':[r for r in results if 'error' in r],
+          }
+          Path('history-audit.json').write_text(json.dumps({'summary':summary,'repos':results},indent=2))
+          print('SUMMARY '+json.dumps(summary,separators=(',',':')), flush=True)
+          PY
+
+          python audit.py
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: history-squash-audit
+          path: ${{ runner.temp }}/history-audit/history-audit.json
+          if-no-files-found: error
