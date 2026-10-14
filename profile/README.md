@@ -16,6 +16,21 @@ The long-term objective is translational: use better measurement, better computa
 
 ---
 
+
+<!-- VALIDATION_PRODUCT_STATUS:BEGIN -->
+## Validation and product completion status
+
+**Reviewed 2026-10-14; implementation base `84b86e899fbe`.** **Status: Organization documentation; no scientific runtime to qualify.** This is an evidence-backed scope assessment, not a percentage-complete estimate or a declaration that the product is finished.
+
+| Area | Current evidence / remaining gate |
+|---|---|
+| Software / operational checks | Repository implementation/planning evidence only; no fresh runtime qualification was performed in this documentation audit. |
+| Scientific or domain evidence | The profile distinguishes research infrastructure, prototypes and discovery programs. This repository is an organization portal, not a biomedical algorithm or validated product. |
+| Remaining for the declared product scope | Keep component links, roles, evidence levels and implementation dates synchronized; remove unsupported organization-wide clinical/completeness claims; maintain the centralized status index and link each claimed capability to its repository evidence. |
+
+Evidence and limits: [repository report](../profile/README.md). The [organization status index](https://github.com/Virelion-Biotech/Virelion-HeartTwin/blob/main/docs/STACK_VALIDATION_STATUS.md) separates software, numerical, data-readiness and empirical qualification. Code/schema execution or a completed download is not a substitute for endpoint-specific validation.
+<!-- VALIDATION_PRODUCT_STATUS:END -->
+
 ## What Virelion is building
 
 Virelion's current public technology is organized as a connected cardiac research stack rather than a collection of unrelated applications.
