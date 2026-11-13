@@ -99,12 +99,7 @@ for repository in "${REPOSITORIES[@]}"; do
   payload_file="$(mktemp)"
   response_file="$(mktemp)"
 
-  jq -n \\
-    --arg name "$ruleset_name" \\
-    --arg repository "$repository" \\
-    --argjson checks "$checks" \\
-    --argjson approvals "$REQUIRED_APPROVALS" \\
-    '{
+  jq -n --arg name "$ruleset_name" --arg repository "$repository" --argjson checks "$checks" --argjson approvals "$REQUIRED_APPROVALS" '{
       name: $name,
       target: "branch",
       enforcement: "active",
@@ -142,18 +137,6 @@ for repository in "${REPOSITORIES[@]}"; do
       ],
       bypass_actors: []
     }' >"$payload_file"
-
-  existing_id="$(gh api --paginate "orgs/${ORG}/rulesets?per_page=100" 2>/dev/null     | jq -r --arg name "$ruleset_name" '.[] | select(.name == $name) | .id'     | head -n 1 || true)"
-
-  if [[ -n "$existing_id" ]]; then
-    method="PUT"
-    endpoint="orgs/${ORG}/rulesets/${existing_id}"
-    operation="updated"
-  else
-    method="POST"
-    endpoint="orgs/${ORG}/rulesets"
-    operation="created"
-  fi
 
   if gh api --method "$method" "$endpoint" --input "$payload_file" >"$response_file"; then
     ruleset_id="$(jq -r '.id // "unknown"' "$response_file")"
