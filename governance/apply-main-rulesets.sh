@@ -104,11 +104,6 @@ for repository in "${REPOSITORIES[@]}"; do
       target: "branch",
       enforcement: "active",
       conditions: {
-        repository_name: {
-          include: [$repository],
-          exclude: [],
-          protected: false
-        },
         ref_name: {
           include: ["~DEFAULT_BRANCH"],
           exclude: []
@@ -137,6 +132,18 @@ for repository in "${REPOSITORIES[@]}"; do
       ],
       bypass_actors: []
     }' >"$payload_file"
+
+  rulesets="$(gh api "repos/${ORG}/${repository}/rulesets" 2>/dev/null || echo '[]')"
+  existing_id="$(jq -r --arg name "$ruleset_name" '[.[] | select(.name == $name)] | last | .id // empty' <<<"$rulesets")"
+  if [[ -n "$existing_id" ]]; then
+    method="PUT"
+    endpoint="repos/${ORG}/${repository}/rulesets/${existing_id}"
+    operation="update"
+  else
+    method="POST"
+    endpoint="repos/${ORG}/${repository}/rulesets"
+    operation="create"
+  fi
 
   if gh api --method "$method" "$endpoint" --input "$payload_file" >"$response_file"; then
     ruleset_id="$(jq -r '.id // "unknown"' "$response_file")"
