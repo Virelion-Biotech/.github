@@ -47,3 +47,15 @@ Third-party actions and security scanner images should be pinned to immutable co
 The ruleset script derives the required check contexts from the most recent successful main-branch CI/test workflow for each repository. If a repository has no matching successful workflow, the script skips it. Do not replace a missing check with a guessed context.
 
 After each repository changes its CI job names, rerun the script or update the ruleset manually so that required checks remain accurate.
+
+
+## 5. Apply repository security settings
+
+Run the security-settings script separately from a machine with GitHub CLI (gh) and jq installed:
+
+```bash
+gh auth login
+bash governance/enable-security-features.sh
+```
+
+The script requests Dependabot alerts, Dependabot security updates, native secret scanning, secret-scanning push protection, and private vulnerability reporting for each of the 22 repositories. It reports per-repository failures; a failure is not silently treated as enabled. These are GitHub repository settings, not repository files. Review any eligibility or plan errors returned by GitHub.
