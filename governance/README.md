@@ -72,3 +72,8 @@ REQUIRED_APPROVALS=0 bash governance/apply-main-rulesets.sh
 The ruleset still requires a pull request, configured CI checks, review-thread resolution, and blocks force pushes and branch deletion. A zero-review setting is a deliberate solo-maintainer trade-off, not equivalent to independent review.
 
 The dependency-hygiene workflow does **not** assume that `GITHUB_TOKEN` can create pull requests. GitHub disables that capability by default unless the organization owner enables **Settings → Actions → General → Workflow permissions → Allow GitHub Actions to create and approve pull requests**. Keep that permission disabled unless you specifically want to allow trusted workflows to open PRs. When disabled, the workflow retains the generated lockfiles as a downloadable artifact and reports that manual PR creation is required.
+
+
+## Important: ruleset rollout correction pending
+
+The ruleset rollout script merged in the initial governance PR had an incomplete API request setup. **Do not run `governance/apply-main-rulesets.sh` from the default branch until the follow-up ruleset-fix PR is merged.** The follow-up corrects the request method/endpoint and repository-level payload. The independent security-settings script may be run separately by an organization administrator.
