@@ -123,7 +123,7 @@ for repository in "${REPOSITORIES[@]}"; do
             required_approving_review_count: $approvals,
             dismiss_stale_reviews_on_push: true,
             require_code_owner_review: false,
-            require_last_push_approval: true,
+            require_last_push_approval: ($approvals > 0),
             required_review_thread_resolution: true
           }
         },
