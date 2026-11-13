@@ -2,6 +2,7 @@
 set -Eeuo pipefail
 
 ORG="${GITHUB_ORG:-Virelion-Biotech}"
+REQUIRED_APPROVALS="${REQUIRED_APPROVALS:-1}"
 REPOSITORIES=(
   Virelion-HeartTwin
   Virelion-CardiAnatomy
@@ -30,6 +31,11 @@ REPOSITORIES=(
 command -v gh >/dev/null || { echo "GitHub CLI (gh) is required." >&2; exit 2; }
 command -v jq >/dev/null || { echo "jq is required." >&2; exit 2; }
 gh auth status >/dev/null
+
+if ! [[ "$REQUIRED_APPROVALS" =~ ^[0-6]$ ]]; then
+  echo "REQUIRED_APPROVALS must be an integer from 0 to 6." >&2
+  exit 2
+fi
 
 created=0
 skipped=0
@@ -93,7 +99,12 @@ for repository in "${REPOSITORIES[@]}"; do
   payload_file="$(mktemp)"
   response_file="$(mktemp)"
 
-  jq -n     --arg name "$ruleset_name"     --arg repository "$repository"     --argjson checks "$checks"     '{
+  jq -n \\
+    --arg name "$ruleset_name" \\
+    --arg repository "$repository" \\
+    --argjson checks "$checks" \\
+    --argjson approvals "$REQUIRED_APPROVALS" \\
+    '{
       name: $name,
       target: "branch",
       enforcement: "active",
@@ -114,7 +125,7 @@ for repository in "${REPOSITORIES[@]}"; do
         {
           type: "pull_request",
           parameters: {
-            required_approving_review_count: 1,
+            required_approving_review_count: $approvals,
             dismiss_stale_reviews_on_push: true,
             require_code_owner_review: false,
             require_last_push_approval: true,
