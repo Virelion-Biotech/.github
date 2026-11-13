@@ -39,8 +39,15 @@ for repository in "${REPOSITORIES[@]}"; do
   echo
   echo "==> ${ORG}/${repository}"
 
-  if ! runs="$(gh api "repos/${ORG}/${repository}/actions/runs" -f branch=main -f event=push -f per_page=100 2>/dev/null)"; then
-    echo "SKIP: cannot read workflow runs."
+  default_branch="$(gh api "repos/${ORG}/${repository}" --jq '.default_branch' 2>/dev/null || true)"
+  if [[ -z "$default_branch" ]]; then
+    echo "SKIP: cannot determine the default branch."
+    skipped=$((skipped + 1))
+    continue
+  fi
+
+  if ! runs="$(gh api "repos/${ORG}/${repository}/actions/runs" -f branch="$default_branch" -f event=push -f per_page=100 2>/dev/null)"; then
+    echo "SKIP: cannot read workflow runs on ${default_branch}."
     skipped=$((skipped + 1))
     continue
   fi
@@ -112,7 +119,6 @@ for repository in "${REPOSITORIES[@]}"; do
             require_code_owner_review: false,
             require_last_push_approval: true,
             required_review_thread_resolution: true,
-            allowed_merge_methods: ["merge", "squash", "rebase"]
           }
         },
         {
