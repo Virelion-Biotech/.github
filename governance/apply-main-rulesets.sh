@@ -118,7 +118,7 @@ for repository in "${REPOSITORIES[@]}"; do
             dismiss_stale_reviews_on_push: true,
             require_code_owner_review: false,
             require_last_push_approval: true,
-            required_review_thread_resolution: true,
+            required_review_thread_resolution: true
           }
         },
         {
