@@ -10,7 +10,7 @@ From a machine with GitHub CLI (gh) and jq installed:
 
 ```bash
 gh auth login
-bash governance/apply-main-rulesets.sh
+REQUIRED_APPROVALS=1 bash governance/apply-main-rulesets.sh
 ```
 
 The script:
@@ -59,3 +59,16 @@ bash governance/enable-security-features.sh
 ```
 
 The script requests Dependabot alerts, Dependabot security updates, native secret scanning, secret-scanning push protection, and private vulnerability reporting for each of the 22 repositories. It reports per-repository failures; a failure is not silently treated as enabled. These are GitHub repository settings, not repository files. Review any eligibility or plan errors returned by GitHub.
+
+
+## Review threshold and GitHub Actions PR permissions
+
+The main ruleset script defaults to one independent approving review. For a repository with only one maintainer, that can make merging impossible because a pull-request author cannot approve their own PR. Decide the reviewer policy before applying the ruleset. Where no independent reviewer is available, use:
+
+```bash
+REQUIRED_APPROVALS=0 bash governance/apply-main-rulesets.sh
+```
+
+The ruleset still requires a pull request, configured CI checks, review-thread resolution, and blocks force pushes and branch deletion. A zero-review setting is a deliberate solo-maintainer trade-off, not equivalent to independent review.
+
+The dependency-hygiene workflow does **not** assume that `GITHUB_TOKEN` can create pull requests. GitHub disables that capability by default unless the organization owner enables **Settings → Actions → General → Workflow permissions → Allow GitHub Actions to create and approve pull requests**. Keep that permission disabled unless you specifically want to allow trusted workflows to open PRs. When disabled, the workflow retains the generated lockfiles as a downloadable artifact and reports that manual PR creation is required.
