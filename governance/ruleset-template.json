@@ -3,11 +3,6 @@
   "target": "branch",
   "enforcement": "active",
   "conditions": {
-    "repository_name": {
-      "include": ["REPLACE_REPOSITORY"],
-      "exclude": [],
-      "protected": false
-    },
     "ref_name": {
       "include": ["~DEFAULT_BRANCH"],
       "exclude": []
