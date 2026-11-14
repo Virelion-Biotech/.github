@@ -40,3 +40,7 @@ jobs:
             echo "Repository-level rulesets must not use the organization-only repository_name condition."
             exit 1
           fi
+      - name: Guard read-only workflow discovery methods
+        run: |
+          grep -Fq 'gh api --method GET "repos/${ORG}/${repository}/actions/runs"' governance/apply-main-rulesets.sh
+          grep -Fq 'gh api --method GET "repos/${ORG}/${repository}/actions/runs/${run_id}/jobs"' governance/apply-main-rulesets.sh
