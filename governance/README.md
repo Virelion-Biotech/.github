@@ -4,7 +4,7 @@ This directory contains the recommended organization-wide main-branch ruleset an
 
 ## 1. Apply main-branch rulesets
 
-The GitHub connector available to the maintenance workflow can read rulesets but cannot create organization rulesets. An organization owner must apply them with a GitHub CLI token that has organization administration permission.
+The maintenance workflow can inspect rulesets but cannot create or update them through its connected integration. Run the script from a workstation authenticated with a token that has repository-administration permission for every target repository. An organization owner can use an organization-admin token.
 
 From a machine with GitHub CLI (gh) and jq installed:
 
@@ -18,7 +18,7 @@ The script:
 - discovers successful job check names from the latest successful main-branch push workflow whose name resembles CI/tests;
 - requires those checks, one approving review, approval after the latest push, and resolution of review conversations;
 - blocks force pushes and branch deletion;
-- creates or updates one organization ruleset per repository;
+- creates or updates one **repository-level ruleset** per repository;
 - skips a repository rather than creating a ruleset with an empty or guessed check list.
 
 Run it from a clone of this repository. Review the generated rulesets in Organization Settings → Rules → Rulesets after execution.
@@ -69,6 +69,11 @@ The main ruleset script defaults to one independent approving review. For a repo
 REQUIRED_APPROVALS=0 bash governance/apply-main-rulesets.sh
 ```
 
-The ruleset still requires a pull request, configured CI checks, review-thread resolution, and blocks force pushes and branch deletion. Setting the approval count to zero also disables the last-push-approval requirement. This is a deliberate solo-maintainer trade-off, not equivalent to independent review.
+The ruleset still requires a pull request, configured CI checks, review-thread resolution, and blocks force pushes and branch deletion. Setting the approval count to zero also disables last-push approval; this is a deliberate solo-maintainer trade-off, not equivalent to independent review.
 
 The dependency-hygiene workflow does **not** assume that `GITHUB_TOKEN` can create pull requests. GitHub disables that capability by default unless the organization owner enables **Settings → Actions → General → Workflow permissions → Allow GitHub Actions to create and approve pull requests**. Keep that permission disabled unless you specifically want to allow trusted workflows to open PRs. When disabled, the workflow retains the generated lockfiles as a downloadable artifact and reports that manual PR creation is required.
+
+
+## Important: ruleset rollout correction pending
+
+The ruleset rollout script merged in the initial governance PR had an incomplete API request setup. **Do not run `governance/apply-main-rulesets.sh` from the default branch until the follow-up ruleset-fix PR is merged.** The follow-up corrects the request method/endpoint and repository-level payload. The independent security-settings script may be run separately by an organization administrator.
