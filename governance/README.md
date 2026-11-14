@@ -4,7 +4,7 @@ This directory contains the recommended organization-wide main-branch ruleset an
 
 ## 1. Apply main-branch rulesets
 
-The GitHub connector available to the maintenance workflow can read rulesets but cannot create organization rulesets. An organization owner must apply them with a GitHub CLI token that has organization administration permission.
+The maintenance workflow can inspect rulesets but cannot create or update them through its connected integration. Run the script from a workstation authenticated with a token that has repository-administration permission for every target repository. An organization owner can use an organization-admin token.
 
 From a machine with GitHub CLI (gh) and jq installed:
 
@@ -18,7 +18,7 @@ The script:
 - discovers successful job check names from the latest successful main-branch push workflow whose name resembles CI/tests;
 - requires those checks, one approving review, approval after the latest push, and resolution of review conversations;
 - blocks force pushes and branch deletion;
-- creates or updates one organization ruleset per repository;
+- creates or updates one **repository-level ruleset** per repository;
 - skips a repository rather than creating a ruleset with an empty or guessed check list.
 
 Run it from a clone of this repository. Review the generated rulesets in Organization Settings → Rules → Rulesets after execution.
