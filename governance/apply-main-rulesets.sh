@@ -52,7 +52,7 @@ for repository in "${REPOSITORIES[@]}"; do
     continue
   fi
 
-  if ! runs="$(gh api "repos/${ORG}/${repository}/actions/runs" -f branch="$default_branch" -f event=push -f per_page=100 2>/dev/null)"; then
+  if ! runs="$(gh api --method GET "repos/${ORG}/${repository}/actions/runs" -f branch="$default_branch" -f event=push -f per_page=100 2>/dev/null)"; then
     echo "SKIP: cannot read workflow runs on ${default_branch}."
     skipped=$((skipped + 1))
     continue
@@ -76,7 +76,7 @@ for repository in "${REPOSITORIES[@]}"; do
   run_name="$(jq -r '.name' <<<"$run")"
   echo "Selected workflow: ${run_name} (run ${run_id})"
 
-  if ! jobs="$(gh api "repos/${ORG}/${repository}/actions/runs/${run_id}/jobs" -f per_page=100 2>/dev/null)"; then
+  if ! jobs="$(gh api --method GET "repos/${ORG}/${repository}/actions/runs/${run_id}/jobs" -f per_page=100 2>/dev/null)"; then
     echo "SKIP: cannot read jobs for selected workflow."
     skipped=$((skipped + 1))
     continue
