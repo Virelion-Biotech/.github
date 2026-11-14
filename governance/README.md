@@ -1,6 +1,6 @@
 # Virelion organization security and repository governance
 
-This directory contains the recommended organization-wide main-branch ruleset and the administrator script that creates a repository-specific ruleset for the 22-repository HeartTwin ecosystem.
+This directory contains administrator scripts for rolling out a repository-level main-branch ruleset and enabling security features across the 22-repository HeartTwin ecosystem.
 
 ## 1. Apply main-branch rulesets
 
@@ -21,7 +21,7 @@ The script:
 - creates or updates one **repository-level ruleset** per repository;
 - skips a repository rather than creating a ruleset with an empty or guessed check list.
 
-Run it from a clone of this repository. Review the generated rulesets in Organization Settings → Rules → Rulesets after execution.
+Run it from a clone of this repository. Review each generated ruleset in that repository's Settings → Code, planning, and automation → Rulesets page. These are repository-level rulesets, not one organization-level ruleset. The organization-level rulesets page manages rulesets created through the organization API and is a separate scope.
 
 **Do not apply the rulesets before every repository has at least one successful default-branch CI/test run with stable job names.** Verify the selected checks and test a pull request before relying on enforcement.
 
@@ -72,8 +72,3 @@ REQUIRED_APPROVALS=0 bash governance/apply-main-rulesets.sh
 The ruleset still requires a pull request, configured CI checks, review-thread resolution, and blocks force pushes and branch deletion. Setting the approval count to zero also disables last-push approval; this is a deliberate solo-maintainer trade-off, not equivalent to independent review.
 
 The dependency-hygiene workflow does **not** assume that `GITHUB_TOKEN` can create pull requests. GitHub disables that capability by default unless the organization owner enables **Settings → Actions → General → Workflow permissions → Allow GitHub Actions to create and approve pull requests**. Keep that permission disabled unless you specifically want to allow trusted workflows to open PRs. When disabled, the workflow retains the generated lockfiles as a downloadable artifact and reports that manual PR creation is required.
-
-
-## Important: ruleset rollout correction pending
-
-The ruleset rollout script merged in the initial governance PR had an incomplete API request setup. **Do not run `governance/apply-main-rulesets.sh` from the default branch until the follow-up ruleset-fix PR is merged.** The follow-up corrects the request method/endpoint and repository-level payload. The independent security-settings script may be run separately by an organization administrator.
